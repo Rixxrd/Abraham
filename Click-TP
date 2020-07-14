@@ -1,0 +1,8 @@
+local TeleportTool=Instance.new("Tool",game.Players.LocalPlayer.Backpack)
+TeleportTool.Name="Teleport"
+TeleportTool.RequiresHandle=false
+TeleportTool.Equipped:connect(function(mouse)
+mouse.Button1Down:connect(function()
+game.Players.LocalPlayer.Character:MoveTo(mouse.Hit.p)
+end)
+end)
