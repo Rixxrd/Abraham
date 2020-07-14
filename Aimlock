@@ -1,0 +1,63 @@
+--don't steal or I have to obfuscate
+
+local function compare(mag, plr)
+	local cf = plr.Character.Head.CFrame
+	local cmag = (PlayersService.LocalPlayer.Character.Head.Position - cf.p).magnitude
+
+	if cmag < mag then
+		return cf
+	end
+end
+game:GetService("RunService").RenderStepped:Connect(function()
+	if enabled then
+		if not plrSelected or not (plrSelected.Character or plrSelected.Character:FindFirstChild("Head")) then
+			local cf
+			local mag = math.huge
+			for _, plr in pairs(game.Players:GetPlayers()) do
+				if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
+					local s, pcf = pcall(compare, mag, plr)
+					if s and pcf then
+						cf = pcf
+						print("overwritten with "..plr.Name)
+					end
+				end
+			end
+
+			if cf then
+				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.p, cf.p)
+			end
+		else
+			workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.p, plrSelected.Character.Head.Position)
+		end
+	end
+end)
+
+game.Players.LocalPlayer.Chatted:Connect(function(msg)
+	if msg:find("%^focus/") then
+		print("Trying to get focused player")
+		local name = msg:match("%^focus/(.*)$")
+		local plr
+		for _, cplr in pairs(game.Players:GetPlayers()) do
+			if cplr.Name:lower():find(name:lower()) then
+				plr = cplr
+				print("Focused onto "..cplr.Name)
+				break
+			end
+		end
+		if not plr then
+			print("Could not find "..name)
+		else
+			plrSelected = plr
+			print("Focusing onto "..plr.Name)
+		end
+	elseif msg:find("%^auto") then
+		plrSelected = nil
+		print("Automatic focus.")
+	elseif msg:find("%^enable") then
+		enabled = true
+		print("Aimbot enabled.")
+	elseif msg:find("%^disable") then
+		enabled = false
+		print("Aimbot disabled")
+	end
+end)
